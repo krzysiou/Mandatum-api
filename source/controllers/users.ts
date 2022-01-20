@@ -27,8 +27,8 @@ export const registerUser = (users:userData[]) => {
     if (user) return res.status(400).json({error: 'Name taken'});
     try {
       //Hashing
-      const hashedPassword = await bcrypt.hash(req.body.password, 10)
-      const hashedEmail = await bcrypt.hash(req.body.email, 10)
+      const hashedPassword = await bcrypt.hash(req.body.password, 10);
+      const hashedEmail = await bcrypt.hash(req.body.email, 10);
       //Create User
       const user:userData = {
         id: req.body.id,
@@ -39,7 +39,7 @@ export const registerUser = (users:userData[]) => {
       //add user to database
       users.push(user);
       //generate jwt and return it
-      const accessToken = jwt.sign(user, process.env.ACCESS_TOKEN_SECRET as jwt.Secret)
+      const accessToken = jwt.sign(user, process.env.ACCESS_TOKEN_SECRET)
       res.status(201).json({accessToken: accessToken })
     } catch (error) {
       res.status(500).send(error)
