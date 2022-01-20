@@ -6,7 +6,7 @@
       "outDir": "./build",
       "rootDir": "./source",
       "target": "es6",
-      "skipLibCheck": true,
+      "skipLibCheck": false,
       "strict": true
   }
 }

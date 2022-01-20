@@ -1,14 +1,15 @@
 import express from "express";
-import { showUsers, userData } from "./controllers/users";
+import { userData, showUsers, registerUser } from "./controllers/users";
 
 //define mandatory variables
 const app = express();
-const port:string = "3000";
+const port:string = "3001";
 
 let users: userData[] = [];
 
 //routes
-app.use('/users', showUsers(users))
+app.get('/users', showUsers(users))
+app.post('/users/register', registerUser(users))
 
 //listen to port
 app.listen(port, () => console.log('Listening to port:', port));
