@@ -8,7 +8,7 @@ const port:string = "3000";
 let users: userData[] = [];
 
 //routes
-app.get('/users', showUsers(users))
+app.use('/users', showUsers(users))
 
 //listen to port
-app.listen(port, ()=>console.log('Listening to port:', port));
+app.listen(port, () => console.log('Listening to port:', port));
