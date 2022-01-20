@@ -4,6 +4,8 @@ import bcrypt from 'bcrypt'
 import jwt from 'jsonwebtoken'
 require('dotenv').config()
 
+// !!! PROBLEM withimport of jsonwebtoken and bcrypt !!!
+
 export type userData = {
   id: string,
   name: string,
