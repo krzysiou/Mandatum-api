@@ -1,5 +1,9 @@
+import * as dotenv from 'dotenv';
 import express from "express";
 import { userData, showUsers, registerUser } from "./controllers/users";
+
+//configure envirnomental variables
+dotenv.config()
 
 //define mandatory variables
 const app = express();

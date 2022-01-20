@@ -1,8 +1,10 @@
 import express, {Request, Response} from 'express'
 import { registerValidation } from '../validation/registerValidation'
+import TOKEN from '../varConfig'
+
 var bcrypt = require('bcrypt');
 var jwt = require('jsonwebtoken');
-require('dotenv').config()
+
 
 export type userData = {
   id: string,
@@ -39,7 +41,7 @@ export const registerUser = (users:userData[]) => {
       //add user to database
       users.push(user);
       //generate jwt and return it
-      const accessToken = jwt.sign(user, '12332112331212323')
+      const accessToken = jwt.sign(user, TOKEN.TOKEN_SECRET)
       res.status(201).json({accessToken: accessToken })
     } catch (error) {
       res.status(500).send(error)
