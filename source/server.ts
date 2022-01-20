@@ -1,6 +1,6 @@
-import * as dotenv from 'dotenv';
 import express from "express";
 import { userData, showUsers, registerUser } from "./controllers/users";
+import dotenv from "dotenv";
 
 //configure envirnomental variables
 dotenv.config()
@@ -8,7 +8,6 @@ dotenv.config()
 //define mandatory variables
 const app = express();
 app.use(express.json());
-const port:string = "3001";
 
 let users: userData[] = [];
 
@@ -17,4 +16,4 @@ app.get('/users', showUsers(users))
 app.post('/users/register', registerUser(users))
 
 //listen to port
-app.listen(port, () => console.log('Listening to port:', port));
+app.listen(process.env.PORT, () => console.log('Listening to port:', process.env.PORT));
