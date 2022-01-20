@@ -3,6 +3,7 @@ import { userData, showUsers, registerUser } from "./controllers/users";
 
 //define mandatory variables
 const app = express();
+app.use(express.json());
 const port:string = "3001";
 
 let users: userData[] = [];

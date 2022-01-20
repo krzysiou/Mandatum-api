@@ -1,14 +1,12 @@
 import express, {Request, Response} from 'express'
 import { registerValidation } from '../validation/registerValidation'
-import bcrypt from 'bcrypt'
-import jwt from 'jsonwebtoken'
+var bcrypt = require('bcrypt');
+var jwt = require('jsonwebtoken');
 require('dotenv').config()
-
-// !!! PROBLEM withimport of jsonwebtoken and bcrypt !!!
 
 export type userData = {
   id: string,
-  name: string,
+  username: string,
   email: string,
   password:string
 };
@@ -20,13 +18,13 @@ export const showUsers = (users:userData[]) => {
 }
 
 export const registerUser = (users:userData[]) => {
-  return async (req: Request, res: Response) => {
+  return async (req:Request, res:Response) => {
     //validate user data
-    const error = registerValidation(req.body);
+    const { error } = registerValidation(req.body);
     if (error) return res.status(400).json({error: error.details[0].message});
     //check if username taken
-    const user = users.find(user => user.name === req.body.name);
-    if (user) return res.status(400).json({error: 'Name taken'});
+    const found:userData = users.find(user => user.username === req.body.username);
+    if (found) return res.status(400).json({error: 'userame taken'});
     try {
       //Hashing
       const hashedPassword = await bcrypt.hash(req.body.password, 10);
@@ -34,14 +32,14 @@ export const registerUser = (users:userData[]) => {
       //Create User
       const user:userData = {
         id: req.body.id,
-        name: req.body.name,
+        username: req.body.username,
         email: hashedEmail,
         password: hashedPassword
       }
       //add user to database
       users.push(user);
       //generate jwt and return it
-      const accessToken = jwt.sign(user, process.env.ACCESS_TOKEN_SECRET)
+      const accessToken = jwt.sign(user, '12332112331212323')
       res.status(201).json({accessToken: accessToken })
     } catch (error) {
       res.status(500).send(error)
