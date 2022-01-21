@@ -9,6 +9,7 @@ dotenv.config()
 const app = express();
 app.use(express.json());
 
+//temporary databases
 let users: userData[] = [];
 
 //routes
