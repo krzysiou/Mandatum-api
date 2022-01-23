@@ -1,5 +1,6 @@
 import express from "express";
-import { userData, showUsers, registerUser, loginUser } from "./controllers/users";
+import { userData, showUsers, registerUser, loginUser, addUser, getUser } from "./controllers/users";
+import { checkAuth } from "./authorization/checkAuth";
 import dotenv from "dotenv";
 
 //configure envirnomental variables
@@ -16,6 +17,8 @@ let users: userData[] = [];
 app.get('/users', showUsers(users));
 app.post('/users/register', registerUser(users));
 app.post('/users/login', loginUser(users))
+app.post('/users/add', checkAuth, addUser(users))
+app.post('/users/get', checkAuth, getUser())
 
 //listen to port
 app.listen(process.env.PORT, () => console.log('Listening to port:', process.env.PORT));
