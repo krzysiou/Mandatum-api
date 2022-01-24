@@ -20,9 +20,9 @@ app.post('/users/login', loginUser(users));
 app.post('/users/add', checkAuth, addUser(users));
 app.post('/users/get', checkAuth, getUser());
 app.post('/users/get/id', checkAuth, getUserId(users));
-app.patch('/users/patch/username', checkAuth, changeUsername(users));
 app.post('/users/pinned/add', checkAuth, pinAdd(users));
 app.post('/users/pinned/remove', checkAuth, pinRemove(users));
+app.patch('/users/patch/username', checkAuth, changeUsername(users));
 
 //listen to port
 app.listen(process.env.PORT, () => console.log('Listening to port:', process.env.PORT));
