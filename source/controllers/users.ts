@@ -12,9 +12,9 @@ export type userData = {
   username: string,
   email: string,
   password:string,
-  friends:{id:string, username:string}[],
-  pinned:{id:string, username:string}[],
-  recent:{id:string, username:string}[]
+  friends:{id:string}[],
+  pinned:{id:string}[],
+  recent:{id:string}[]
 };
 
 //return all users
@@ -106,7 +106,7 @@ export const addUser = (users:userData[]) => {
         if(user === friend){
           return res.status(400).json({error: 'you cannot add yourself'});
         }
-        user.friends.push({id: friend.id, username: friend.username});
+        user.friends.push({id: friend.id});
         //update token
         const accessToken = jwt.sign(user, process.env.TOKEN_SECRET);
         return res.status(200).json({accessToken: accessToken, message: 'successfully added'});
