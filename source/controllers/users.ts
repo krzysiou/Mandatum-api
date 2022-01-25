@@ -109,7 +109,7 @@ export const addUser = (users:userData[]) => {
         user.friends.push(friend.id);
         //update token
         const accessToken = jwt.sign(user, process.env.TOKEN_SECRET);
-        return res.status(200).json({accessToken: accessToken, message: 'successfully added'});
+        return res.status(200).json({accessToken: accessToken, message: 'successfully added', id: friend.id});
       } catch {
         return res.status(500).json({error: 'process failed'});
       }
@@ -156,13 +156,13 @@ export const changeUsername = (users:userData[]) => {
 }
 
 //get user id
-export const getUserId = (users:userData[]) => {
+export const getUsername = (users:userData[]) => {
   return async (req: ModifiedRequest, res:Response) => {
     try {
       //find user
-      const user = users.find(user => user.username === req.body.username)
+      const user = users.find(user => user.id === req.body.id)
       //return id
-      return res.status(200).json({id: user.id});
+      return res.status(200).json({username: user.username});
     } catch {
       return res.status(500).json({error: 'process failed'});
     }
@@ -203,6 +203,19 @@ export const pinRemove = (users:userData[]) => {
       }
       const accessToken = jwt.sign(user, process.env.TOKEN_SECRET);
       return res.status(200).json({accessToken: accessToken});
+    } catch {
+      return res.status(500).json({error: 'process failed'});
+    }
+  }
+}
+
+//return friends
+export const getFriends = (users:userData[]) => {
+  return async (req: ModifiedRequest, res:Response) => {
+    try {
+      //find usertToPin
+      const user = users.find(user => user.id === req.currentUser.id);
+      return res.status(200).json({friends: user.friends});
     } catch {
       return res.status(500).json({error: 'process failed'});
     }

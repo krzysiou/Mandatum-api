@@ -1,5 +1,5 @@
 import express from "express";
-import { userData, showUsers, registerUser, loginUser, addUser, getUser, changeUsername, getUserId, pinAdd, pinRemove } from "./controllers/users";
+import { userData, showUsers, registerUser, loginUser, addUser, getUser, changeUsername, getUsername, pinAdd, pinRemove, getFriends } from "./controllers/users";
 import { checkAuth } from "./authorization/checkAuth";
 import dotenv from "dotenv";
 
@@ -19,9 +19,10 @@ app.post('/users/register', registerUser(users));
 app.post('/users/login', loginUser(users));
 app.post('/users/add', checkAuth, addUser(users));
 app.post('/users/get', checkAuth, getUser());
-app.post('/users/get/id', checkAuth, getUserId(users));
+app.post('/users/get/username', checkAuth, getUsername(users));
 app.post('/users/pinned/add', checkAuth, pinAdd(users));
 app.post('/users/pinned/remove', checkAuth, pinRemove(users));
+app.post('/users/pinned/get', checkAuth, getFriends(users));
 app.patch('/users/patch/username', checkAuth, changeUsername(users));
 
 //listen to port
