@@ -75,7 +75,7 @@ export const loginUser = (users:userData[]) => {
           //if password correct
           if(await bcrypt.compare(req.body.password, user.password)){
               //generate jwt and return it
-              const accessToken = jwt.sign(user, process.env.TOKEN_SECRET)
+              const accessToken = jwt.sign({id: user.id, username:user.username, friends: user.friends, pinned: user.pinned, recent: user.recent}, process.env.TOKEN_SECRET)
               res.json({accessToken: accessToken})
           } 
           //if incorrect password
@@ -105,10 +105,12 @@ export const addUser = (users:userData[]) => {
         const user = users.find(user => user.username === req.currentUser.username)
         if(user === friend){
           return res.status(400).json({error: 'you cannot add yourself'});
+        } else if (user.friends.includes(friend.id)) {
+          return res.status(400).json({error: 'user already added'});
         }
         user.friends.push(friend.id);
         //update token
-        const accessToken = jwt.sign(user, process.env.TOKEN_SECRET);
+        const accessToken = jwt.sign({id: user.id, username:user.username, friends: user.friends, pinned: user.pinned, recent: user.recent}, process.env.TOKEN_SECRET);
         return res.status(200).json({accessToken: accessToken, message: 'successfully added', id: friend.id});
       } catch {
         return res.status(500).json({error: 'process failed'});
@@ -147,7 +149,7 @@ export const changeUsername = (users:userData[]) => {
       const user = users.find(user => user.username === req.currentUser.username)
       user.username = req.body.username;
       //update token
-      const accessToken = jwt.sign(user, process.env.TOKEN_SECRET);
+      const accessToken = jwt.sign({id: user.id, username:user.username, friends: user.friends, pinned: user.pinned, recent: user.recent}, process.env.TOKEN_SECRET);
       return res.status(200).json({accessToken: accessToken, message: 'successfully changed', newUsername: user.username});
     } catch {
       return res.status(500).json({error: 'process failed'});
@@ -179,7 +181,7 @@ export const pinAdd = (users:userData[]) => {
       let user = users.find(user => user.username === req.currentUser.username);
       //add user id to pinned
       user.pinned.push(userToPin.id);
-      const accessToken = jwt.sign(user, process.env.TOKEN_SECRET);
+      const accessToken = jwt.sign({id: user.id, username:user.username, friends: user.friends, pinned: user.pinned, recent: user.recent}, process.env.TOKEN_SECRET);
       return res.status(200).json({accessToken: accessToken});
     } catch {
       return res.status(500).json({error: 'process failed'});
@@ -201,7 +203,7 @@ export const pinRemove = (users:userData[]) => {
           user.pinned.splice(i, 1); 
         }
       }
-      const accessToken = jwt.sign(user, process.env.TOKEN_SECRET);
+      const accessToken = jwt.sign({id: user.id, username:user.username, friends: user.friends, pinned: user.pinned, recent: user.recent}, process.env.TOKEN_SECRET);
       return res.status(200).json({accessToken: accessToken});
     } catch {
       return res.status(500).json({error: 'process failed'});
