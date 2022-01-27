@@ -17,5 +17,3 @@ export const checkAuth = (req: ModifiedRequest, res: Response, next: NextFunctio
       return res.status(401).json({error: 'authorization check failed'})
     }
 };
-
-//testing something
