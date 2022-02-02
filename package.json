@@ -25,6 +25,7 @@
     "@typescript-eslint/parser": "^5.10.0",
     "eslint": "^8.7.0",
     "nodemon": "^2.0.15",
+    "prisma": "^3.9.1",
     "ts-node": "^10.4.0"
   }
 }
