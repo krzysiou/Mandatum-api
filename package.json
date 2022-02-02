@@ -9,6 +9,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@prisma/client": "^3.9.1",
     "@types/bcrypt": "^5.0.0",
     "@types/joi": "^17.2.3",
     "@types/jsonwebtoken": "^8.5.8",
