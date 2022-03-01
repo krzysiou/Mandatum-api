@@ -25,19 +25,31 @@ export const showUsers = (users:userData[]) => {
 }
 
 //register user
-export const registerUser = (users:userData[]) => {
+export const registerUser = (users:userData[], prisma) => {
   return async (req:Request, res:Response) => {
     //validate user data
     const { error } = registerValidation(req.body);
     if (error) return res.status(400).json({error: 'incorrect credentials'});
     //check if username taken
-    const found:userData = users.find(user => user.username === req.body.username);
+    const found = await prisma.user.findUnique({
+      where: {
+        username: req.body.username,
+      },
+    })
     if (found) return res.status(400).json({error: 'username taken'});
     try {
       //Hashing
       const hashedPassword = await bcrypt.hash(req.body.password, 10);
       const hashedEmail = await bcrypt.hash(req.body.email, 10);
 
+      //add user to database
+      // const createdUser = await prisma.User.create({
+      //   data: {
+      //     username: req.body.username,
+      //     email: hashedEmail,
+      //     password: hashedPassword,
+      //   },
+      // })
       //Create User
       const user:userData = {
         id: req.body.id,
@@ -60,7 +72,7 @@ export const registerUser = (users:userData[]) => {
 }
 
 //log user in
-export const loginUser = (users:userData[]) => {
+export const loginUser = (users:userData[], prisma) => {
   return async (req: Request, res:Response) => {
       //Validation
       const { error } = loginValidation(req.body)
