@@ -18,16 +18,16 @@ let users: userData[] = [];
 const prisma = new PrismaClient()
 
 //routes
-app.get('/users', showUsers(users));
-app.post('/users/register', registerUser(users, prisma));
-app.post('/users/login', loginUser(users, prisma));
-app.post('/users/add', checkAuth, addUser(users));
+app.get('/users', showUsers(prisma));
+app.post('/users/register', registerUser(prisma));
+app.post('/users/login', loginUser(prisma));
+app.post('/users/add', checkAuth, addUser(prisma));
 app.post('/users/get', checkAuth, getUser());
-app.post('/users/get/username', checkAuth, getUsername(users));
-app.post('/users/pinned/add', checkAuth, pinAdd(users));
-app.post('/users/pinned/remove', checkAuth, pinRemove(users));
-app.post('/users/pinned/get', checkAuth, getFriends(users));
-app.patch('/users/patch/username', checkAuth, changeUsername(users));
+app.post('/users/get/username', checkAuth, getUsername(prisma));
+app.post('/users/pinned/add', checkAuth, pinAdd(prisma));
+app.post('/users/pinned/remove', checkAuth, pinRemove(prisma));
+app.post('/users/pinned/get', checkAuth, getFriends(prisma));
+app.patch('/users/patch/username', checkAuth, changeUsername(prisma));
 
 //listen to port
 app.listen(process.env.PORT, () => console.log('Listening to port:', process.env.PORT));
