@@ -357,28 +357,6 @@ export const getFriends = (prisma) => {
   }
 }
 
-//change username
-// export const changeUsername = (users:userData[]) => {
-//   return async (req: ModifiedRequest, res:Response) => {
-//     try {
-//       //Validation
-//       const { error } = addUserValidation(req.body)
-//       if (error) return res.status(400).json({error: 'incorrect username'})
-//       //check if username taken
-//       const found:userData = users.find(user => user.username === req.body.username);
-//       if (found) return res.status(400).json({error: 'username taken'});
-//       //find user
-//       const user = users.find(user => user.username === req.currentUser.username)
-//       user.username = req.body.username;
-//       //update token
-//       const accessToken = jwt.sign({id: user.id, username:user.username, friends: user.friends, pinned: user.pinned, recent: user.recent}, process.env.TOKEN_SECRET);
-//       return res.status(200).json({accessToken: accessToken, message: 'successfully changed', newUsername: user.username});
-//     } catch {
-//       return res.status(500).json({error: 'process failed'});
-//     }
-//   }
-// }
-
 export const changeUsername = (prisma) => {
   return async (req: ModifiedRequest, res:Response) => {
     try {
