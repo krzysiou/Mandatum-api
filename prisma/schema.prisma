@@ -12,14 +12,24 @@ model User {
   username    String      @unique
   email       String
   password    String
-  friendships Friendship[] @relation("Owners")
-  memberships  Friendship[] @relation("Members")
+  friendships Friendship[] @relation("OwnerFriendship")
+  memberships Friendship[] @relation("MemberFriendship")
+  pins        Pin[] @relation("OwnerPin")
+  memberpins  Pin[] @relation("MemberPin")
 }
 
 model Friendship {
-  id       Int      @id @default(autoincrement())
+  id       String      @id @default(uuid())
   ownerId  String
-  owner    User     @relation("Owners", fields: [ownerId], references: [id])
+  owner    User     @relation("OwnerFriendship", fields: [ownerId], references: [id])
   memberId String
-  member   User     @relation("Members", fields: [memberId], references: [id])
+  member   User     @relation("MemberFriendship", fields: [memberId], references: [id])
+}
+
+model Pin {
+  id       String      @id @default(uuid())
+  ownerId  String?
+  owner    User?     @relation("OwnerPin", fields: [ownerId], references: [id])
+  memberId String?
+  member   User?     @relation("MemberPin", fields: [memberId], references: [id])
 }
