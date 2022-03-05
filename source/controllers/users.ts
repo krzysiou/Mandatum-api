@@ -205,7 +205,69 @@ export const addUser = (prisma) => {
         })
 
         //update token
-        return res.status(200).json({accessToken: await generateToken(updatedUser, prisma), message: 'successfully added', id: friend.id});
+        return res.status(200).json({accessToken: await generateToken(updatedUser, prisma), id: friend.id});
+      } catch {
+        return res.status(500).json({error: 'process failed'});
+      }
+  }
+}
+
+//remove friend
+export const removeUser = (prisma) => {
+  return async (req: ModifiedRequest, res:Response) => {
+      //find user
+      const friend = await prisma.user.findUnique({
+        where: {
+          id: req.body.id,
+        },
+      })
+      //if not found
+      if (!friend) {
+        return res.status(400).json({error: 'user not found'})
+      }
+      try {
+        //add user to friends
+        const user = await prisma.user.findUnique({
+          where: {
+            username: req.currentUser.username,
+          },
+        })
+        //remove friendship
+        const deletedFriend = await prisma.Friendship.deleteMany({
+          where: {
+            OR : [
+              {
+                AND : {
+                  ownerId: {
+                    equals: user.id
+                  },
+                  memberId: {
+                    equals: friend.id
+                  }
+                } 
+              },
+              {
+                AND : {
+                  ownerId: {
+                    equals: friend.id
+                  },
+                  memberId: {
+                    equals: user.id
+                  }
+                 } 
+              }
+            ]
+          },
+        })
+        //add user to friends
+        const updatedUser = await prisma.user.findUnique({
+          where: {
+            username: req.currentUser.username,
+          },
+        })
+
+        //update token
+        return res.status(200).json({accessToken: await generateToken(updatedUser, prisma)});
       } catch {
         return res.status(500).json({error: 'process failed'});
       }
