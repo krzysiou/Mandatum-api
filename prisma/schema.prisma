@@ -16,6 +16,8 @@ model User {
   memberships Friendship[] @relation("MemberFriendship")
   pins        Pin[] @relation("OwnerPin")
   memberpins  Pin[] @relation("MemberPin")
+  recents        Recent[] @relation("OwnerRecent")
+  memberrecents  Recent[] @relation("MemberRecent")
 }
 
 model Friendship {
@@ -32,4 +34,13 @@ model Pin {
   owner    User?     @relation("OwnerPin", fields: [ownerId], references: [id])
   memberId String?
   member   User?     @relation("MemberPin", fields: [memberId], references: [id])
+}
+
+model Recent {
+  id       String      @id @default(uuid())
+  ownerId  String?
+  owner    User?     @relation("OwnerRecent", fields: [ownerId], references: [id])
+  memberId String?
+  member   User?     @relation("MemberRecent", fields: [memberId], references: [id])
+  lastCheckout  DateTime
 }

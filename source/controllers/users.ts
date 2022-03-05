@@ -3,6 +3,7 @@ import { registerValidation } from '../validation/registerValidation'
 import { loginValidation } from '../validation/loginValidation';
 import { addUserValidation } from '../validation/addUserValidation';
 import { ModifiedRequest } from '../authorization/checkAuth';
+import { date } from 'joi';
 
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
@@ -33,11 +34,27 @@ export const generateToken = async (user, prisma) => {
       }
     },
   })
+  const rawRecents = await prisma.Recent.findMany({
+    where: {
+      ownerId: {
+        equals: user.id
+      }
+    },
+  })
   //processing arrays
   const processedFriendships = rawFriendships.map((record)=>{
     return (user.id === record.ownerId ? record.memberId : record.ownerId)
   })
   const processedPins = rawPins.map((record)=>{
+    return record.memberId
+  })
+  rawRecents.sort(function(a, b){
+    const date1 = a.lastCheckout
+    const date2 = b.lastCheckout
+    return date2 - date1;
+  })
+
+  const processedRecents = rawRecents.map((record)=>{
     return record.memberId
   })
   //generate token
@@ -46,11 +63,10 @@ export const generateToken = async (user, prisma) => {
     username: user.username,
     friends: processedFriendships,
     pinned: processedPins,
-    recent: []
+    recent: processedRecents.slice(0,10)
   }, process.env.TOKEN_SECRET)
   return token
 }
-
 //return all users
 export const showUsers = (prisma) => {
   return async (req: Request, res: Response) => {
@@ -58,7 +74,6 @@ export const showUsers = (prisma) => {
     return res.status(200).json(result);
   }
 }
-
 //register user
 export const registerUser = (prisma) => {
   return async (req:Request, res:Response) => {
@@ -90,7 +105,6 @@ export const registerUser = (prisma) => {
     }
   }
 }
-
 //log user in
 export const loginUser = (prisma) => {
   return async (req: Request, res:Response) => {
@@ -121,7 +135,6 @@ export const loginUser = (prisma) => {
       }
   }
 }
-
 //add friend
 export const addUser = (prisma) => {
   return async (req: ModifiedRequest, res:Response) => {
@@ -194,7 +207,6 @@ export const addUser = (prisma) => {
       }
   }
 }
-
 //remove friend
 export const removeUser = (prisma) => {
   return async (req: ModifiedRequest, res:Response) => {
@@ -242,6 +254,32 @@ export const removeUser = (prisma) => {
             ]
           },
         })
+        //remove recent
+        const deletedRecent = await prisma.Recent.deleteMany({
+          where: {
+            AND : {
+              ownerId: {
+                equals: user.id
+              },
+              memberId: {
+                equals: friend.id
+              }
+            } 
+          }
+        })
+        //remove recent
+        const deletedPin = await prisma.Pin.deleteMany({
+          where: {
+            AND : {
+              ownerId: {
+                equals: user.id
+              },
+              memberId: {
+                equals: friend.id
+              }
+            } 
+          }
+        })
         //add user to friends
         const updatedUser = await prisma.user.findUnique({
           where: {
@@ -255,7 +293,6 @@ export const removeUser = (prisma) => {
       }
   }
 }
-
 //decode token and return data
 export const getUser = () => {
   return async (req: ModifiedRequest, res:Response) => {
@@ -272,7 +309,6 @@ export const getUser = () => {
     }
   }
 }
-
 //get user id
 export const getUsername = (prisma) => {
   return async (req: ModifiedRequest, res:Response) => {
@@ -290,7 +326,7 @@ export const getUsername = (prisma) => {
     }
   }
 }
-
+//add to pinned
 export const pinAdd = (prisma) => {
   return async (req: ModifiedRequest, res:Response) => {
     try {
@@ -325,7 +361,7 @@ export const pinAdd = (prisma) => {
     }
   }
 }
-
+//remove from pinned
 export const pinRemove = (prisma) => {
   return async (req: ModifiedRequest, res:Response) => {
     try {
@@ -359,7 +395,7 @@ export const pinRemove = (prisma) => {
     }
   }
 }
-
+//get array of friends
 export const getFriends = (prisma) => {
   return async (req: ModifiedRequest, res:Response) => {
     try {
@@ -394,7 +430,7 @@ export const getFriends = (prisma) => {
     }
   }
 }
-
+//change username
 export const changeUsername = (prisma) => {
   return async (req: ModifiedRequest, res:Response) => {
     try {
@@ -424,7 +460,81 @@ export const changeUsername = (prisma) => {
         },
       })
       //update token
-      return res.status(200).json({accessToken: await generateToken(updateUser, prisma), message: 'successfully changed', newUsername: req.body.username});
+      return res.status(200).json({accessToken: await generateToken(updatedUser, prisma), message: 'successfully changed', newUsername: req.body.username});
+    } catch {
+      return res.status(500).json({error: 'process failed'});
+    }
+  }
+}
+//add to recents
+export const addRecent = (prisma) => {
+  return async (req: ModifiedRequest, res:Response) => {
+    try {
+      //find users
+      const userToAdd = await prisma.user.findUnique({
+        where: {
+          id: req.body.id,
+        },
+      })
+      const user = await prisma.user.findUnique({
+        where: {
+          id: req.currentUser.id,
+        },
+      })
+      if(await prisma.Recent.count({
+        where: {
+          AND : [
+            {
+              ownerId: {
+                equals: user.id
+              }
+            },
+            {
+              memberId: {
+                equals: userToAdd.id
+              }
+            }
+          ]
+        },
+      })){
+        //add user id to recent
+        const updatedRecent = await prisma.Recent.updateMany({
+          where: {
+            AND : [
+              {
+                ownerId: {
+                  equals: user.id
+                }
+              },
+              {
+                memberId: {
+                  equals: userToAdd.id
+                }
+              }
+            ]
+          },
+          data: {
+            lastCheckout: new Date()
+          }
+        })
+      } else {
+        //add user id to recent
+        const addedRecent = await prisma.Recent.create({
+          data: {
+            ownerId: user.id,
+            memberId: userToAdd.id,
+            lastCheckout: new Date()
+          }
+        })
+      }
+      //update user
+      const updatedUser = await prisma.user.findUnique({
+        where: {
+          username: req.currentUser.username,
+        },
+      })
+      //update token
+      return res.status(200).json({accessToken: await generateToken(updatedUser, prisma), message: 'successfully changed', newUsername: req.body.username});
     } catch {
       return res.status(500).json({error: 'process failed'});
     }

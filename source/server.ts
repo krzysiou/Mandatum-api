@@ -1,5 +1,5 @@
 import express from "express";
-import { showUsers, registerUser, loginUser, addUser, getUser, changeUsername, getUsername, pinAdd, pinRemove, getFriends, removeUser } from "./controllers/users";
+import { showUsers, registerUser, loginUser, addUser, getUser, changeUsername, getUsername, pinAdd, pinRemove, getFriends, removeUser, addRecent } from "./controllers/users";
 import { checkAuth } from "./authorization/checkAuth";
 import dotenv from "dotenv";
 import { PrismaClient } from '@prisma/client';
@@ -19,6 +19,7 @@ app.post('/users/login', loginUser(prisma));
 app.post('/users/add', checkAuth, addUser(prisma));
 app.post('/users/remove', checkAuth, removeUser(prisma));
 app.post('/users/get', checkAuth, getUser());
+app.post('/users/click', checkAuth, addRecent(prisma));
 app.post('/users/get/username', checkAuth, getUsername(prisma));
 app.post('/users/pinned/add', checkAuth, pinAdd(prisma));
 app.post('/users/pinned/remove', checkAuth, pinRemove(prisma));
