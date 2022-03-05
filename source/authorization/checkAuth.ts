@@ -1,8 +1,17 @@
 import express, {Request, Response} from 'express'
 import { NextFunction } from "express";
-import { userData } from '../controllers/users';
 
 const jwt = require('jsonwebtoken');
+
+export type userData = {
+  id: string,
+  username: string,
+  email: string,
+  password:string,
+  friends:string[],
+  pinned:string[],
+  recent:string[]
+};
 
 export interface ModifiedRequest extends Request {
   currentUser:userData;

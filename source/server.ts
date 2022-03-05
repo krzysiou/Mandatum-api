@@ -1,19 +1,14 @@
 import express from "express";
-import { userData, showUsers, registerUser, loginUser, addUser, getUser, changeUsername, getUsername, pinAdd, pinRemove, getFriends, removeUser } from "./controllers/users";
+import { showUsers, registerUser, loginUser, addUser, getUser, changeUsername, getUsername, pinAdd, pinRemove, getFriends, removeUser } from "./controllers/users";
 import { checkAuth } from "./authorization/checkAuth";
 import dotenv from "dotenv";
 import { PrismaClient } from '@prisma/client';
 
 //configure envirnomental variables
 dotenv.config()
-
 //define mandatory variables
 const app = express();
 app.use(express.json());
-
-//temporary databases
-let users: userData[] = [];
-
 //ORM 
 const prisma = new PrismaClient()
 
