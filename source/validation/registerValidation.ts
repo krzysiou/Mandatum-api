@@ -1,8 +1,7 @@
-import { userData } from "../controllers/users"
 const Joi = require('joi')
 
 //register validation
-export const registerValidation = (data:userData) => {
+export const registerValidation = (data) => {
     const schema = Joi.object({
         id: Joi.string().required(),
         username: Joi.string().min(6).required().max(20),

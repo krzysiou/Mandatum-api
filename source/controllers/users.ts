@@ -3,24 +3,13 @@ import { registerValidation } from '../validation/registerValidation'
 import { loginValidation } from '../validation/loginValidation';
 import { addUserValidation } from '../validation/addUserValidation';
 import { ModifiedRequest } from '../authorization/checkAuth';
-import { isError } from 'joi';
 
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 
-export type userData = {
-  id: string,
-  username: string,
-  email: string,
-  password:string,
-  friends:string[],
-  pinned:string[],
-  recent:string[]
-};
-
 //generate jwt and return it
 export const generateToken = async (user, prisma) => {
-
+  //get raw arrays
   const rawFriendships = await prisma.Friendship.findMany({
     where: {
       OR : [
@@ -37,7 +26,6 @@ export const generateToken = async (user, prisma) => {
       ]
     },
   })
-
   const rawPins = await prisma.Pin.findMany({
     where: {
       ownerId: {
@@ -45,15 +33,14 @@ export const generateToken = async (user, prisma) => {
       }
     },
   })
-
+  //processing arrays
   const processedFriendships = rawFriendships.map((record)=>{
     return (user.id === record.ownerId ? record.memberId : record.ownerId)
   })
-
   const processedPins = rawPins.map((record)=>{
     return record.memberId
   })
-
+  //generate token
   const token = jwt.sign({
     id: user.id,
     username: user.username,
@@ -89,7 +76,6 @@ export const registerUser = (prisma) => {
       //Hashing
       const hashedPassword = await bcrypt.hash(req.body.password, 10);
       const hashedEmail = await bcrypt.hash(req.body.email, 10);
-
       //add user to database
       const user = await prisma.User.create({
         data: {
@@ -159,7 +145,6 @@ export const addUser = (prisma) => {
             username: req.currentUser.username,
           },
         })
-
         if(user.id === friend.id){
           return res.status(400).json({error: 'you cannot add yourself'});
         } else if (await prisma.Friendship.count({
@@ -196,14 +181,12 @@ export const addUser = (prisma) => {
             memberId: friend.id
           },
         })
-        
         //add user to friends
         const updatedUser = await prisma.user.findUnique({
           where: {
             username: req.currentUser.username,
           },
         })
-
         //update token
         return res.status(200).json({accessToken: await generateToken(updatedUser, prisma), id: friend.id});
       } catch {
@@ -265,7 +248,6 @@ export const removeUser = (prisma) => {
             username: req.currentUser.username,
           },
         })
-
         //update token
         return res.status(200).json({accessToken: await generateToken(updatedUser, prisma)});
       } catch {
@@ -331,7 +313,6 @@ export const pinAdd = (prisma) => {
           memberId: userToPin.id
         }
       })
-
       //update user
       const updatedUser = await prisma.user.findUnique({
         where: {
@@ -366,8 +347,6 @@ export const pinRemove = (prisma) => {
           memberId: found.id,
         }
       })
-
-      console.log(deleteUser)
        //update user
        const updatedUser = await prisma.user.findUnique({
         where: {
@@ -390,7 +369,6 @@ export const getFriends = (prisma) => {
           username: req.currentUser.username,
         },
       })
-
       const rawFriendships = await prisma.Friendship.findMany({
         where: {
           OR : [
@@ -407,11 +385,9 @@ export const getFriends = (prisma) => {
           ]
         },
       })
-
       const processedFriendships = rawFriendships.map((record)=>{
         return (user.id === record.ownerId ? record.memberId : record.ownerId)
       })
-
       return res.status(200).json({friends: processedFriendships});
     } catch {
       return res.status(500).json({error: 'process failed'});
@@ -441,7 +417,6 @@ export const changeUsername = (prisma) => {
           username: req.body.username,
         },
       })
-
       //update user
       const updatedUser = await prisma.user.findUnique({
         where: {
