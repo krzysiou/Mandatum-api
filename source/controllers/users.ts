@@ -456,7 +456,7 @@ export const changeUsername = (prisma) => {
       //update user
       const updatedUser = await prisma.user.findUnique({
         where: {
-          username: req.currentUser.username,
+          username: req.body.username,
         },
       })
       //update token
