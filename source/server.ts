@@ -1,13 +1,15 @@
 import express from "express";
+import dotenv from "dotenv";
 import { showUsers, registerUser, loginUser, addUser, getUser, changeUsername, getUsername, pinAdd, pinRemove, getFriends, removeUser, addRecent } from "./controllers/users";
 import { checkAuth } from "./authorization/checkAuth";
-import dotenv from "dotenv";
 import { PrismaClient } from '@prisma/client';
+var cors = require('cors')
 
 //configure envirnomental variables
 dotenv.config()
 //define mandatory variables
 const app = express();
+app.use(cors())
 app.use(express.json());
 //ORM 
 const prisma = new PrismaClient()
