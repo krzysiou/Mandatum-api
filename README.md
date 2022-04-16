@@ -1,6 +1,6 @@
-# live-click-api
+# Mandatum-api
 
-This is a ```Node.js RestAPI``` developed for my [live-click](https://github.com/krzysiou/live-click) website. It contains endpoints which allow front-end to send and request data. It got hot-reload feature using nodemon. To host server on your computer simply type ```npm install``` and follow it by ```nodemon index.js```.
+This is a ```Node.js RestAPI``` developed for my [Mandatum](https://github.com/krzysiou/Mandatum) website. It contains endpoints which allow front-end to send and request data. It got hot-reload feature using nodemon. To host server on your computer simply type ```npm install``` and follow it by ```nodemon index.js```.
 
 ## Technologies
 
